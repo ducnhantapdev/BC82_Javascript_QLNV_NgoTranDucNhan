@@ -133,32 +133,71 @@ function renderNhanVien(arr = arrNhanVien) {
 }
 let emailUpdate = null;
 function handleUpdateNhanVien(email) {
-  return (emailUpdate = email);
+  // Lưu email của nhân viên cần sửa
+  emailUpdate = email;
+
+  // Tìm nhân viên trong mảng
+  let nhanvienindex = arrNhanVien.findIndex((item) => item.email === email);
+
+  if (nhanvienindex !== -1) {
+    let nhanVien = arrNhanVien[nhanvienindex];
+
+    // Hiển thị thông tin lên form
+    document.querySelector("#tknv").value = nhanVien.tk;
+    document.querySelector("#name").value = nhanVien.name;
+    document.querySelector("#email").value = nhanVien.email;
+    document.querySelector("#password").value = nhanVien.password;
+    document.querySelector("#datepicker").value = nhanVien.ngaylam;
+    document.querySelector("#luongCB").value = nhanVien.luongCB;
+    document.querySelector("#chucvu").value = nhanVien.chucvu;
+    document.querySelector("#gioLam").value = nhanVien.gioLam;
+
+    // Ẩn nút thêm, hiện nút cập nhật
+    document.querySelector("#btnThemNV").style.display = "none";
+    document.querySelector("#btnCapNhat").style.display = "block";
+  }
 }
-document.querySelector("#btnCapNhat").onclick = function updateNhanVien() {
+
+document.querySelector("#btnCapNhat").onclick = function () {
+  // Kiểm tra xem có email cần cập nhật không
+  if (!emailUpdate) {
+    alert("Vui lòng chọn nhân viên cần cập nhật!");
+    return;
+  }
+
+  // Lấy thông tin từ form
   let form = document.querySelector("#formNhanVien");
   let nhanvien = layDuLieuTuForm(form);
-  console.log(nhanvien);
-  let email = handleUpdateNhanVien(emailUpdate);
 
-  let nhanvienindex = arrNhanVien.findIndex((item) => item.email === email);
-  console.log(nhanvienindex);
+  // Tìm vị trí nhân viên cần cập nhật
+  let nhanvienindex = arrNhanVien.findIndex(
+    (item) => item.email === emailUpdate
+  );
 
-  if (nhanvienindex != -1) {
+  if (nhanvienindex !== -1) {
+    // Cập nhật thông tin
     arrNhanVien[nhanvienindex] = nhanvien;
+
+    // Lưu vào localStorage
     saveDataNhanVienLocal();
+
+    // Render lại bảng
     renderNhanVien();
+
+    // Reset form và ẩn modal
+    form.reset();
+    $("#myModal").modal("hide");
+
+    // Reset lại trạng thái nút
+    document.querySelector("#btnThemNV").style.display = "block";
+    document.querySelector("#btnCapNhat").style.display = "none";
+
+    // Reset emailUpdate
+    emailUpdate = null;
+
+    alert("Cập nhật thông tin thành công!");
   }
 };
-
-// nhanvienUpdate.tk = document.querySelector("#tknv").value;
-// nhanvienUpdate.name = document.querySelector("#name").value;
-// nhanvienUpdate.email = document.querySelector("#email").value;
-// nhanvienUpdate.password = document.querySelector("#password").value;
-// nhanvienUpdate.ngaylam = document.querySelector("#datepicker").value;
-// nhanvienUpdate.luongCB = document.querySelector("#luongCB").value;
-// nhanvienUpdate.chucvu = document.querySelector("#chucvu").value;
-// nhanvienUpdate.gioLam = document.querySelector("#gioLam").value;
 
 let emailDelete = null;
 function handleDeleteNhanVien(email) {
