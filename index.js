@@ -276,7 +276,7 @@ function renderNhanVien(arr = arrNhanVien) {
         <td>${ngaylam}</td>
         <td>${cv}</td>
         <td>${tongluong}</td>
-        <td>${loaiNhanVien}</td>
+        <td id="loaiNhanVien">${loaiNhanVien}</td>
         <td class="d-flex col-12 ">
           <button
               class="btn btn-primary mr-2"
@@ -357,6 +357,7 @@ document.querySelector("#btnCapNhat").onclick = function () {
   }
 };
 
+//Xoá nhân viên
 let emailDelete = null;
 function handleDeleteNhanVien(email) {
   let nhanVienCanXoa = arrNhanVien.findIndex((item) => item.email === email);
@@ -366,3 +367,35 @@ function handleDeleteNhanVien(email) {
     renderNhanVien();
   }
 }
+//Tìm kiếm
+// Tìm kiếm nhân viên theo loại
+function searchByLoaiNhanVien() {
+  let loaiValue = document
+    .querySelector("#searchName")
+    .value.replace(/\s+/g, "") // xoá khoảng trắng giữa các ký tự nếu có
+    .trim()
+    .toLowerCase();
+  console.log("loaiValue", loaiValue);
+  const normalizedLoaiValue = removeVietnameseTones(loaiValue.toLowerCase()); // Loại bỏ dấu từ loại tìm kiếm
+  console.log("normalizedLoaiValue", normalizedLoaiValue);
+  const filteredNhanVien = arrNhanVien.filter((nhanVien) => {
+    let loai = handleXepLoaiNhanVien(nhanVien.gioLam); // Lấy loại nhân viên
+    let loaiString =
+      loai === 1
+        ? "xuấtsắc"
+        : loai === 2
+        ? "giỏi"
+        : loai === 3
+        ? "khá"
+        : "trung bình";
+    loaiString = removeVietnameseTones(loaiString.trim().toLowerCase());
+
+    return loaiString.toLowerCase().includes(normalizedLoaiValue);
+  });
+  renderNhanVien(filteredNhanVien);
+}
+
+// Gọi hàm tìm kiếm khi người dùng chọn loại nhân viên
+document
+  .querySelector("#searchName")
+  .addEventListener("change", searchByLoaiNhanVien);
