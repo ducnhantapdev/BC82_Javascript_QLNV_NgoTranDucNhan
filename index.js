@@ -2,33 +2,198 @@ const KEY_LOCAL = "arrSinhVien";
 let arrNhanVien = getDataNhanVienLocal();
 renderNhanVien();
 
-//lay thong tin tu form
+//lấy thông tin từ  form
 function layDuLieuTuForm(form) {
   let formData = new FormData(form);
   let nhanVien = Object.fromEntries(formData);
   return nhanVien;
 }
-// save thong tin localstorage
+// save thông tin localstorage
 function saveDataNhanVienLocal() {
   let dataString = JSON.stringify(arrNhanVien);
   localStorage.setItem(KEY_LOCAL, dataString);
 }
 
-//lay thong tin localstorage
+//lấy thông tin localstorage
 function getDataNhanVienLocal() {
   let dataLocal = localStorage.getItem(KEY_LOCAL); // chuỗi json
   return dataLocal ? JSON.parse(dataLocal) : [];
 }
 
-//them nhan vien
+// Validate tài khoản
+function validateTaiKhoan(tk) {
+  if (!tk) {
+    document.querySelector("#tbTKNV").innerHTML =
+      "Tài khoản không được để trống";
+    document.querySelector("#tbTKNV").style.display = "block";
+    return false;
+  }
+  if (!/^\d{4,6}$/.test(tk)) {
+    document.querySelector("#tbTKNV").innerHTML = "Tài khoản phải từ 4-6 ký số";
+    document.querySelector("#tbTKNV").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbTKNV").style.display = "none";
+  return true;
+}
+
+// Validate tên nhân viên
+function validateTen(name) {
+  if (!name) {
+    document.querySelector("#tbTen").innerHTML = "Tên không được để trống";
+    document.querySelector("#tbTen").style.display = "block";
+    return false;
+  }
+  if (!/^[a-zA-ZÀ-ỹ\s]+$/.test(name)) {
+    document.querySelector("#tbTen").innerHTML = "Tên phải là chữ cái";
+    document.querySelector("#tbTen").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbTen").style.display = "none";
+  return true;
+}
+
+// Validate email
+function validateEmail(email) {
+  if (!email) {
+    document.querySelector("#tbEmail").innerHTML = "Email không được để trống";
+    document.querySelector("#tbEmail").style.display = "block";
+    return false;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.querySelector("#tbEmail").innerHTML = "Email không đúng định dạng";
+    document.querySelector("#tbEmail").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbEmail").style.display = "none";
+  return true;
+}
+
+// Validate mật khẩu
+function validateMatKhau(password) {
+  if (!password) {
+    document.querySelector("#tbMatKhau").innerHTML =
+      "Mật khẩu không được để trống";
+    document.querySelector("#tbMatKhau").style.display = "block";
+    return false;
+  }
+  if (
+    !/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,10}$/.test(
+      password
+    )
+  ) {
+    document.querySelector("#tbMatKhau").innerHTML =
+      "Mật khẩu từ 6-10 ký tự, chứa ít nhất 1 ký tự số, 1 ký tự in hoa, 1 ký tự đặc biệt";
+    document.querySelector("#tbMatKhau").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbMatKhau").style.display = "none";
+  return true;
+}
+
+// Validate ngày làm
+function validateNgayLam(ngaylam) {
+  if (!ngaylam) {
+    document.querySelector("#tbNgay").innerHTML =
+      "Ngày làm không được để trống";
+    document.querySelector("#tbNgay").style.display = "block";
+    return false;
+  }
+  if (!/^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/.test(ngaylam)) {
+    document.querySelector("#tbNgay").innerHTML =
+      "Ngày làm phải theo định dạng mm/dd/yyyy";
+    document.querySelector("#tbNgay").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbNgay").style.display = "none";
+  return true;
+}
+
+// Validate lương cơ bản
+function validateLuongCB(luongCB) {
+  if (!luongCB) {
+    document.querySelector("#tbLuongCB").innerHTML =
+      "Lương cơ bản không được để trống";
+    document.querySelector("#tbLuongCB").style.display = "block";
+    return false;
+  }
+  if (luongCB < 1000000 || luongCB > 20000000) {
+    document.querySelector("#tbLuongCB").innerHTML =
+      "Lương cơ bản từ 1.000.000 - 20.000.000";
+    document.querySelector("#tbLuongCB").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbLuongCB").style.display = "none";
+  return true;
+}
+
+// Validate chức vụ
+function validateChucVu(chucvu) {
+  if (!chucvu || chucvu === "0") {
+    document.querySelector("#tbChucVu").innerHTML = "Vui lòng chọn chức vụ";
+    document.querySelector("#tbChucVu").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbChucVu").style.display = "none";
+  return true;
+}
+
+// Validate giờ làm
+function validateGioLam(gioLam) {
+  if (!gioLam) {
+    document.querySelector("#tbGiolam").innerHTML =
+      "Giờ làm không được để trống";
+    document.querySelector("#tbGiolam").style.display = "block";
+    return false;
+  }
+  if (gioLam < 80 || gioLam > 200) {
+    document.querySelector("#tbGiolam").innerHTML = "Giờ làm từ 80 - 200 giờ";
+    document.querySelector("#tbGiolam").style.display = "block";
+    return false;
+  }
+  document.querySelector("#tbGiolam").style.display = "none";
+  return true;
+}
+
+// Validate
+function validateForm() {
+  let tk = document.querySelector("#tknv").value;
+  let name = document.querySelector("#name").value;
+  let email = document.querySelector("#email").value;
+  let password = document.querySelector("#password").value;
+  let ngaylam = document.querySelector("#datepicker").value;
+  let luongCB = parseFloat(document.querySelector("#luongCB").value);
+  let chucvu = document.querySelector("#chucvu").value;
+  let gioLam = parseFloat(document.querySelector("#gioLam").value);
+
+  let isValid = true;
+  isValid = validateTaiKhoan(tk) && isValid;
+  isValid = validateTen(name) && isValid;
+  isValid = validateEmail(email) && isValid;
+  isValid = validateMatKhau(password) && isValid;
+  isValid = validateNgayLam(ngaylam) && isValid;
+  isValid = validateLuongCB(luongCB) && isValid;
+  isValid = validateChucVu(chucvu) && isValid;
+  isValid = validateGioLam(gioLam) && isValid;
+
+  return isValid;
+}
+
+//thêm nhân viên
 document.querySelector("#formNhanVien").onsubmit = function (e) {
   e.preventDefault();
+
+  if (!validateForm()) {
+    return;
+  }
+
   let nhanVien = layDuLieuTuForm(e.target);
   arrNhanVien.push(nhanVien);
   saveDataNhanVienLocal();
   renderNhanVien();
 
   e.target.reset();
+  $("#myModal").modal("hide");
 };
 
 //tim chuc vu
@@ -159,40 +324,33 @@ function handleUpdateNhanVien(email) {
 }
 
 document.querySelector("#btnCapNhat").onclick = function () {
-  // Kiểm tra xem có email cần cập nhật không
   if (!emailUpdate) {
     alert("Vui lòng chọn nhân viên cần cập nhật!");
     return;
   }
 
-  // Lấy thông tin từ form
+  if (!validateForm()) {
+    return;
+  }
+
   let form = document.querySelector("#formNhanVien");
   let nhanvien = layDuLieuTuForm(form);
 
-  // Tìm vị trí nhân viên cần cập nhật
   let nhanvienindex = arrNhanVien.findIndex(
     (item) => item.email === emailUpdate
   );
 
   if (nhanvienindex !== -1) {
-    // Cập nhật thông tin
     arrNhanVien[nhanvienindex] = nhanvien;
-
-    // Lưu vào localStorage
     saveDataNhanVienLocal();
-
-    // Render lại bảng
     renderNhanVien();
 
-    // Reset form và ẩn modal
     form.reset();
     $("#myModal").modal("hide");
 
-    // Reset lại trạng thái nút
     document.querySelector("#btnThemNV").style.display = "block";
     document.querySelector("#btnCapNhat").style.display = "none";
 
-    // Reset emailUpdate
     emailUpdate = null;
 
     alert("Cập nhật thông tin thành công!");
